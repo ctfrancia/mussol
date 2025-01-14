@@ -1,0 +1,2 @@
+# mussol
+a Neovim plugin
