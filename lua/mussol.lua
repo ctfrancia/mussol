@@ -1,27 +1,29 @@
 local M = {}
 local default_targets = { "TODO", "FIXME", "BUG", "NOTE" }
--- Lua function to search a project using Ripgrep (rg)
 local function grep_project(targets)
-    print("---- ln", table.getn(targets))
-  -- Use Ripgrep (rg) to search for the pattern in the project
-  local command = string.format('rg --vimgrep %s', tostring(pattern))
-  
-  -- Execute the command and capture the output
-  local output = vim.fn.systemlist(command)
-  
-  -- Check if the command was successful (output is not empty)
-  if #output == 0 then
-    print("No results found")
-    return
-  end
-  
-  -- Set the quickfix list to show the results
-  vim.fn.setqflist({}, 'r', { title = 'Grep results', lines = output })
-  
-  -- Open the quickfix list
-  vim.cmd('copen')
-end
+    local output = {}
+    for i, target in ipairs(targets) do
+        local command = string.format('rg --vimgrep "%s"', target)
+        local res = vim.fn.systemlist(command)
+        if vim.v.shell_error ~= 0 then
+            print("Error running command for target:", target)
+        else
+            for _, line in ipairs(res) do
+                table.insert(output, line)
+            end
+        end
+    end
 
+    if #output == 0 then
+        print("No results found")
+        return
+    end
+
+    vim.fn.setqflist({}, 'r', { title = 'Grep results', lines = output })
+
+    -- Open the quickfix list
+    vim.cmd('copen')
+end
 
 vim.api.nvim_create_user_command('Mussol', 
     function(opts)
@@ -37,22 +39,12 @@ vim.api.nvim_create_user_command('Mussol',
 , {
     -- nargs = 1
 })
---[[
-vim.api.nvim_create_user_command(
-    'Mussol',
-    function(opts)
-        print(opts.args)
-        grep_project(opts)
-    end,
-    {
-        nargs = 1,
-        complete = function(ArgLead, CmdLine, CursorPos)
-            return vim.fn.getCompletion(ArgLead, "file")
-        end
-    }
-)
-]]
 
+function M.setup()
+    print("Setting up Mussol")
+end
+
+return M
 
 --[[
 local function create_buffer()
