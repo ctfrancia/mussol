@@ -1,6 +1,9 @@
 local M = {}
 local default_targets = { "TODO", "FIXME", "BUG", "NOTE" }
+local settings = require('settings')
+
 local function grep_project(targets)
+    -- settings.setup()
     local output = {}
     for i, target in ipairs(targets) do
         local command = string.format('rg --vimgrep "%s"', target)
@@ -33,16 +36,28 @@ vim.api.nvim_create_user_command('Mussol',
         if action == nil then
             grep_project(default_targets)
         end
+        if action == "list" then
+            -- grep_project(default_targets)
+            -- TODO: Show list of tags to search for
+        end
+
+        if action == "add" then
+            -- TODO: Add a new tag to search for
+        end
+
+        if action == "remove" then
+            -- TODO: Remove a tag from the list
+        end
+
+        if action == "reset" then
+            -- reset to default tags
+        end
         -- print(opts.fargs[1])
         -- grep_project(opts.fargs[1])
     end
 , {
     -- nargs = 1
 })
-
-function M.setup()
-    print("Setting up Mussol")
-end
 
 return M
 
