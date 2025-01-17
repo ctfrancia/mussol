@@ -1,9 +1,27 @@
 local M = {}
-local default_targets = { "TODO", "FIXME", "BUG", "NOTE" }
 local settings = require('settings')
+local config = {}
+local default_config_file = "mussol.json"
+
+local function main()
+    print("Setting up Mussol -- main call back function")
+    -- load json file containing config
+    config = settings.load_tags(default_config_file)
+    -- if file doesn't exist then we assume first time
+    if config == nil then
+        print("Creating new config")
+        settings.create_config(default_config_file)
+        config = settings.load_tags(default_config_file)
+    end
+end
+
+function M.setup()
+  local augroup = vim.api.nvim_create_augroup("MUSSOL", { clear = true })
+  vim.api.nvim_create_autocmd("VimEnter",
+    { group = augroup, desc = "load tags", once = true, callback = main })
+end
 
 local function grep_project(targets)
-    -- settings.setup()
     local output = {}
     for i, target in ipairs(targets) do
         local command = string.format('rg --vimgrep "%s"', target)
@@ -32,8 +50,8 @@ vim.api.nvim_create_user_command('Mussol',
     function(opts)
         local targets = { "TODO", "FIXME", "BUG", "NOTE" }
         local action = opts.fargs[1]
-        print(action)
         if action == nil then
+            -- local default_targets = settings.load_tags()
             grep_project(default_targets)
         end
         if action == "list" then
@@ -42,6 +60,8 @@ vim.api.nvim_create_user_command('Mussol',
         end
 
         if action == "add" then
+            local tag = string.upper(opts.fargs[2])
+            settings.add_tag(tag)
             -- TODO: Add a new tag to search for
         end
 
@@ -52,11 +72,16 @@ vim.api.nvim_create_user_command('Mussol',
         if action == "reset" then
             -- reset to default tags
         end
+
+        if action == "edit" then
+            -- open the settings file
+            settings.edit_tags()
+        end
         -- print(opts.fargs[1])
         -- grep_project(opts.fargs[1])
     end
 , {
-    -- nargs = 1
+    nargs = '*'
 })
 
 return M
@@ -72,8 +97,6 @@ end
 
 local function main()
     local buf = create_buffer()
-    print("Hello from our plugin!!!!!!!!")
-    grep_project("hi")
 end
 
 local function setup()
