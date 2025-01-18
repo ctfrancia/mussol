@@ -1,17 +1,23 @@
-local settings = require('settings')
+local config = require('config')
 local M = {}
+targets = {}
 
 function M.setup(user_config)
     local saved_config = {}
+    -- setup is nil
     if user_config == nil then
-        default_config = settings.create_default_config()
-        settings.save_config(default_config)
-        -- config = settings.load_config(user_config["path"]) TODO: implement this
+        if config.default_config_exists() then
+            local loaded_config = config.load_config(config.default_config_path())
+            targets = loaded_config["targets"]
+        else
+            local created_default_config = config.create_default_config()
+            config.save_config(created_default_config)
+            saved_config = config.load_config(created_default_config["path"])
+            targets = saved_config["targets"]
+        end
     else
-        -- settings.save_config(user_config)
-        -- saved_config = settings.load_config(user_config["path"]) TODO: implement this
+        -- setup is provided
     end
-    -- local config = settings.load_config(user_config["path"]) TODO: implement this
 end
 
 local function grep_project(targets)
@@ -41,11 +47,9 @@ end
 
 vim.api.nvim_create_user_command('Mussol', 
 function(opts)
-    local config = settings.load_tags()
     local action = opts.fargs[1]
     if action == nil then
-        -- local default_targets = settings.load_tags()
-        grep_project(default_targets)
+        grep_project(targets)
     end
     if action == "list" then
         -- grep_project(default_targets)
@@ -54,7 +58,7 @@ function(opts)
 
     if action == "add" then
         local tag = string.upper(opts.fargs[2])
-        settings.add_tag(tag)
+        config.add_tag(tag)
         -- TODO: Add a new tag to search for
     end
 
@@ -67,8 +71,8 @@ function(opts)
     end
 
     if action == "edit" then
-        -- open the settings file
-        settings.edit_tags()
+        -- open the config file
+        config.edit_tags()
     end
     -- print(opts.fargs[1])
     -- grep_project(opts.fargs[1])
@@ -78,25 +82,3 @@ end
 })
 
 return M
-
---[[
-local function create_buffer()
-  local buf = vim.api.nvim_create_buf(true, true)
-  vim.api.nvim_buf_set_name(buf, "*scratch*")
-  vim.api.nvim_set_option_value("filetype", "lua", { buf = buf })
-  return buf
-end
-
-
-local function main()
-    local buf = create_buffer()
-end
-
-local function setup()
-  local augroup = vim.api.nvim_create_augroup("MUSSOL", { clear = true })
-  vim.api.nvim_create_autocmd("VimEnter",
-    { group = augroup, desc = "Set a fennel scratch buffer on load", once = true, callback = main })
-end
-
-return { setup = setup }
-]]

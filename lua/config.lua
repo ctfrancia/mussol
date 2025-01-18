@@ -2,35 +2,28 @@ local json = require("dkjson")
 local M = {}
 
 
-function M.add_tag(tag)
-    tag = string.upper(tag)
-    print("Adding a tag", tag)
+function M.default_config_exists()
+    local file = io.open(M.default_config_path(), "r")
+    if file then
+        file:close()
+        return true
+    else
+        return false
+    end
 end
 
-
-function M.edit_tags()
-    print("Editing tags")
-    local buf = vim.api.nvim_create_buf(false, false)
-    vim.api.nvim_open_win(buf, false, {
-        relative = "win",
-        split = "vertical",
-        width = 40,
-        height = 10,
-        row = 10,
-        col = 10,
-    })
+function M.default_config_path()
+    local default_config_path = "mussol.json"
+    return default_config_path
 end
 
-function M.save_tags()
-    print("Saving tags")
-end
-
-function M.load_tags(filename)
-    if not filename then
-        print("No filename provided.")
+function M.load_config(path_to_config)
+    if not path_to_config then
+        print("No path provided.")
         return nil
     end
-    local file = io.open(filename, "r")
+
+    local file = io.open(path_to_config, "r")
     if not file then return nil end
 
     local jsonData = file:read("*all")
@@ -49,8 +42,9 @@ function M.save_config(config)
         print("No config provided.")
         return
     end
-    local jsonData = json.encode(default_config, { indent = true })
-    local file = io.open(config['config_path'], "w")
+
+    local jsonData = json.encode(config, { indent = true })
+    local file = io.open(config["path"], "w")
     if file then
         file:write(jsonData)
         file:close()
@@ -63,8 +57,8 @@ function M.create_default_config()
     -- local config_path = vim.fn.stdpath("config") .. "/mussol.json" UNCOMMENT FOR Live
     local config_path = "mussol.json"
     local default_config = {
-        config_name = "default",
-        config_path = config_path,
+        name = "default",
+        path = config_path,
         targets = { "TODO", "FIXME", "BUG", "NOTE" },
         highlight = {
             TODO  = { fg = "orange", bg = "none" },
