@@ -1,24 +1,17 @@
-local M = {}
 local settings = require('settings')
-local config = {}
-local default_config_file = "mussol.json"
+local M = {}
 
-local function main()
-    print("Setting up Mussol -- main call back function")
-    -- load json file containing config
-    config = settings.load_tags(default_config_file)
-    -- if file doesn't exist then we assume first time
-    if config == nil then
-        print("Creating new config")
-        settings.create_config(default_config_file)
-        config = settings.load_tags(default_config_file)
+function M.setup(user_config)
+    local saved_config = {}
+    if user_config == nil then
+        default_config = settings.create_default_config()
+        settings.save_config(default_config)
+        -- config = settings.load_config(user_config["path"]) TODO: implement this
+    else
+        -- settings.save_config(user_config)
+        -- saved_config = settings.load_config(user_config["path"]) TODO: implement this
     end
-end
-
-function M.setup()
-  local augroup = vim.api.nvim_create_augroup("MUSSOL", { clear = true })
-  vim.api.nvim_create_autocmd("VimEnter",
-    { group = augroup, desc = "load tags", once = true, callback = main })
+    -- local config = settings.load_config(user_config["path"]) TODO: implement this
 end
 
 local function grep_project(targets)
@@ -47,39 +40,39 @@ local function grep_project(targets)
 end
 
 vim.api.nvim_create_user_command('Mussol', 
-    function(opts)
-        local targets = { "TODO", "FIXME", "BUG", "NOTE" }
-        local action = opts.fargs[1]
-        if action == nil then
-            -- local default_targets = settings.load_tags()
-            grep_project(default_targets)
-        end
-        if action == "list" then
-            -- grep_project(default_targets)
-            -- TODO: Show list of tags to search for
-        end
-
-        if action == "add" then
-            local tag = string.upper(opts.fargs[2])
-            settings.add_tag(tag)
-            -- TODO: Add a new tag to search for
-        end
-
-        if action == "remove" then
-            -- TODO: Remove a tag from the list
-        end
-
-        if action == "reset" then
-            -- reset to default tags
-        end
-
-        if action == "edit" then
-            -- open the settings file
-            settings.edit_tags()
-        end
-        -- print(opts.fargs[1])
-        -- grep_project(opts.fargs[1])
+function(opts)
+    local config = settings.load_tags()
+    local action = opts.fargs[1]
+    if action == nil then
+        -- local default_targets = settings.load_tags()
+        grep_project(default_targets)
     end
+    if action == "list" then
+        -- grep_project(default_targets)
+        -- TODO: Show list of tags to search for
+    end
+
+    if action == "add" then
+        local tag = string.upper(opts.fargs[2])
+        settings.add_tag(tag)
+        -- TODO: Add a new tag to search for
+    end
+
+    if action == "remove" then
+        -- TODO: Remove a tag from the list
+    end
+
+    if action == "reset" then
+        -- reset to default tags
+    end
+
+    if action == "edit" then
+        -- open the settings file
+        settings.edit_tags()
+    end
+    -- print(opts.fargs[1])
+    -- grep_project(opts.fargs[1])
+end
 , {
     nargs = '*'
 })

@@ -1,11 +1,12 @@
-local M = {}
--- local default_targets = { "TODO", "FIXME", "BUG", "NOTE" }
 local json = require("dkjson")
+local M = {}
+
 
 function M.add_tag(tag)
     tag = string.upper(tag)
     print("Adding a tag", tag)
 end
+
 
 function M.edit_tags()
     print("Editing tags")
@@ -25,48 +26,54 @@ function M.save_tags()
 end
 
 function M.load_tags(filename)
-    print("Loading tags", filename)
-    local file = io.open(filename, "r")
-    if not file then return nil end
-    --[[
-    if file then
-        local jsonData = file:read("*all")
-        file:close()
-        local settings, pos, err = json.decode(jsonData, 1, nil)
-        if err then
-            print("Error decoding JSON: " .. err)
-            return nil
-        else
-            return settings
-        end
-    else
-        create_config()
-        print("Error opening file for reading.")
+    if not filename then
+        print("No filename provided.")
         return nil
     end
-    ]]
+    local file = io.open(filename, "r")
+    if not file then return nil end
+
+    local jsonData = file:read("*all")
+    file:close()
+    local settings, pos, err = json.decode(jsonData, 1, nil)
+    if err then
+        print("Error decoding JSON: " .. err)
+        return nil
+    else
+        return settings
+    end
 end
 
-function M.create_config(name)
-    local default_config = {
-        config_name = "mussol.json",
-        -- config_path = vim.fn.stdpath("config") .. "/mussol.json", TODO
-        targets = { "TODO", "FIXME", "BUG", "NOTE" },
-        highlight = {
-            TODO  = { fg = "red", bg = "none" },
-            FIXME = { fg = "yellow", bg = "none" },
-            BUG   = { fg = "red", bg = "none" },
-            NOTE  = { fg = "blue", bg = "none" },
-        },
-    }
+function M.save_config(config)
+    if not config then
+        print("No config provided.")
+        return
+    end
     local jsonData = json.encode(default_config, { indent = true })
-    local file = io.open(name, "w")
+    local file = io.open(config['config_path'], "w")
     if file then
         file:write(jsonData)
         file:close()
     else
         print("Error opening file for writing.")
     end
+end
+
+function M.create_default_config()
+    -- local config_path = vim.fn.stdpath("config") .. "/mussol.json" UNCOMMENT FOR Live
+    local config_path = "mussol.json"
+    local default_config = {
+        config_name = "default",
+        config_path = config_path,
+        targets = { "TODO", "FIXME", "BUG", "NOTE" },
+        highlight = {
+            TODO  = { fg = "orange", bg = "none" },
+            FIXME = { fg = "yellow", bg = "none" },
+            BUG   = { fg = "red", bg = "none" },
+            NOTE  = { fg = "blue", bg = "none" },
+        },
+    }
+    return default_config
 end
 
 return M
