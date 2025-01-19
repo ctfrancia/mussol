@@ -1,6 +1,7 @@
 local config = require('config')
 local M = {}
 local targets = {}
+local ui = require('ui')
 
 function M.setup(user_config)
     local saved_config = {}
@@ -39,10 +40,11 @@ local function grep_project(targets)
         return
     end
 
-    vim.fn.setqflist({}, 'r', { title = 'Grep results', lines = output })
+    ui.toggle_results(output)
+    -- vim.fn.setqflist({}, 'r', { title = 'Grep results', lines = output })
 
     -- Open the quickfix list
-    vim.cmd('copen')
+    -- vim.cmd('copen')
 end
 
 vim.api.nvim_create_user_command('Mussol', 
