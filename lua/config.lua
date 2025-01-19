@@ -1,4 +1,3 @@
-local json = require("dkjson")
 local M = {}
 
 
@@ -28,7 +27,7 @@ function M.load_config(path_to_config)
 
     local jsonData = file:read("*all")
     file:close()
-    local settings, pos, err = json.decode(jsonData, 1, nil)
+    local settings, err = vim.fn.json_decode(jsonData)
     if err then
         print("Error decoding JSON: " .. err)
         return nil
@@ -43,7 +42,7 @@ function M.save_config(config)
         return
     end
 
-    local jsonData = json.encode(config, { indent = true })
+    local jsonData = vim.fn.json_encode(config)
     local file = io.open(config["path"], "w")
     if file then
         file:write(jsonData)

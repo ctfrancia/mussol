@@ -1,6 +1,6 @@
 local config = require('config')
 local M = {}
-targets = {}
+local targets = {}
 
 function M.setup(user_config)
     local saved_config = {}
@@ -16,7 +16,7 @@ function M.setup(user_config)
             targets = saved_config["targets"]
         end
     else
-        -- setup is provided
+        -- setup is provided TODO: validate the setup
     end
 end
 
