@@ -5,7 +5,6 @@ local ui = require('ui')
 
 function M.setup(user_config)
     local saved_config = {}
-    -- setup is nil
     if user_config == nil then
         if config.default_config_exists() then
             local loaded_config = config.load_config(config.default_config_path())
@@ -40,11 +39,7 @@ local function grep_project(targets)
         return
     end
 
-    ui.toggle_results(output)
-    -- vim.fn.setqflist({}, 'r', { title = 'Grep results', lines = output })
-
-    -- Open the quickfix list
-    -- vim.cmd('copen')
+    ui.toggle_results(output) -- TODO: Rename this function to what it actually does
 end
 
 vim.api.nvim_create_user_command('Mussol', 
@@ -76,8 +71,6 @@ function(opts)
         -- open the config file
         config.edit_tags()
     end
-    -- print(opts.fargs[1])
-    -- grep_project(opts.fargs[1])
 end
 , {
     nargs = '*'

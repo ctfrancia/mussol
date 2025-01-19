@@ -1,6 +1,5 @@
 local M = {}
 
-
 function M.default_config_exists()
     local file = io.open(M.default_config_path(), "r")
     if file then
