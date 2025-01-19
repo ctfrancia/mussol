@@ -1,7 +1,7 @@
-local config = require('config')
+local config = require("mussol.config")
+local ui = require("mussol.ui")
 local M = {}
 local targets = {}
-local ui = require('ui')
 
 function M.setup(user_config)
     local saved_config = {}

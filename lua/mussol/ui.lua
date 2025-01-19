@@ -1,5 +1,5 @@
-local M = {}
 local popup = require("plenary.popup")
+local M = {}
 
 Mussol_win_id = nil
 Mussol_bufh = nil
@@ -15,7 +15,7 @@ local function create_popup()
     local width = math.floor(vim.o.columns * 0.8)
     local height = math.floor(vim.o.lines * 0.6)
     local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
-    local bufnr = vim.api.nvim_create_buf(false, false)
+    local bufnr = vim.api.nvim_create_buf(false, true)
 
     local Mussol_win_id, win = popup.create(bufnr, {
         title = "Results",
@@ -40,14 +40,8 @@ local function create_popup()
     }
 end
 
-function M.toggle_results(content, buffers)
-    if Mussol_win_id ~= nil and vim.api.nvim_win_is_valid(Mussol_win_id) then
-        close_popup()
-        return
-    end
-
+function M.toggle_results(content)
     local win_info = create_popup()
-    print(#content)
 
     Mussol_win_id = win_info.win_id
     Mussol_bufh = win_info.bufnr
@@ -62,7 +56,7 @@ function M.toggle_results(content, buffers)
         Mussol_bufh,
         "n",
         "<CR>",
-        [[<cmd>lua require('ui').jump_to_result(vim.fn.getline('.'))<CR>]],
+        [[<cmd>lua require('mussol.ui').jump_to_result(vim.fn.getline('.'))<CR>]],
         {}
     )
 end
@@ -93,7 +87,5 @@ function M.jump_to_result(line)
         end
     end
 end
-
-
 
 return M
