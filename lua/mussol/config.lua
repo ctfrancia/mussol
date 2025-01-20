@@ -1,7 +1,9 @@
 local M = {}
+-- local default_config_path = vim.fn.stdpath("config") .. "/mussol.json"
+local default_config_path = "/mussol.json"
 
 function M.default_config_exists()
-    local file = io.open(M.default_config_path(), "r")
+    local file = io.open(default_config_path, "r")
     if file then
         file:close()
         return true
@@ -11,7 +13,6 @@ function M.default_config_exists()
 end
 
 function M.default_config_path()
-    local default_config_path = "mussol.json"
     return default_config_path
 end
 
@@ -52,11 +53,9 @@ function M.save_config(config)
 end
 
 function M.create_default_config()
-    -- local config_path = vim.fn.stdpath("config") .. "/mussol.json" UNCOMMENT FOR Live
-    local config_path = "mussol.json"
     local default_config = {
         name = "default",
-        path = config_path,
+        path = default_config_path,
         targets = { "TODO", "FIXME", "BUG", "NOTE" },
         highlight = {
             TODO  = { fg = "orange", bg = "none" },
