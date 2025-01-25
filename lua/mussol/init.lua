@@ -27,10 +27,7 @@ local function grep_project()
         local command = string.format('rg --vimgrep "%s"', target)
         local res= vim.fn.systemlist(command)
         if vim.v.shell_error ~= 0 then
-            -- print error
             print(vim.v.shell_error)
-            print("Error running command for target:", target)
-            print("Command:", command)
         else
             for _, line in ipairs(res) do
                 table.insert(output, line)
@@ -50,9 +47,11 @@ vim.api.nvim_create_user_command('Mussol',
 function(opts)
     local action = opts.fargs[1]
     if action == nil then
-        print("No action provided", targets)
         grep_project()
     end
+    --[[
+    I'm not sure if this is necessary? the user could potentiall just edit the
+    config file directly.
     if action == "list" then
         -- grep_project(default_targets)
         -- TODO: Show list of tags to search for
@@ -76,6 +75,7 @@ function(opts)
         -- open the config file
         config.edit_tags()
     end
+    ]]
 end
 , {
     nargs = '*'
