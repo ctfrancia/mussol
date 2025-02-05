@@ -25,9 +25,12 @@ local function grep_project()
     local cfg = config.load_config(config.default_config_path())
 
     for _, target in ipairs(cfg["targets"]) do
+
         local command = string.format('rg --vimgrep "%s"', target)
         local results = vim.fn.systemlist(command)
+
         for _, result in ipairs(results) do
+
             if result:find(target) then
                 table.insert(sorted_results, { text = result, config = cfg["highlight"][target] })
             end
@@ -40,29 +43,8 @@ local function grep_project()
     for _, result in ipairs(sorted_results) do
         table.insert(lines, result.text)
     end
-    --[[
-    local output = {}
-    cfg = config.load_config(config.default_config_path())
-    for i, target in ipairs(cfg["targets"]) do
-        local command = string.format('rg --vimgrep "%s"', target)
-        local res = vim.fn.systemlist(command)
-        if vim.v.shell_error ~= 0 then
-            print(vim.v.shell_error)
-        else
-            for _, line in ipairs(res) do
-                    table.insert(output, { text = line, config = cfg["highlight"][target] })
-                -- table.insert(output, line)
-            end
-        end
-    end
 
-    if #output == 0 then
-        print("No results found")
-        return
-    end
-    ]]
-
-    ui.toggle_results(lines) -- TODO: Rename this function to what it actually does
+    ui.toggle_results(lines, sorted_results) -- TODO: Rename this function to what it actually does
 end
 
 vim.api.nvim_create_user_command('Mussol', 

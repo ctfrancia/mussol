@@ -57,10 +57,10 @@ function M.create_default_config()
         path = default_config_path,
         targets = { "TODO", "FIXME", "BUG", "NOTE" },
         highlight = {
-            TODO  = { wt = 3, fg = "orange", bg = "none" },
-            FIXME = { wt = 1, fg = "yellow", bg = "none" },
-            BUG   = { wt = 2, fg = "red", bg = "none" },
-            NOTE  = { wt = 4, fg = "blue", bg = "none" },
+            TODO  = { wt = 2, fg = "orange", bg = "none" },
+            FIXME = { wt = 10, fg = "yellow", bg = "none" },
+            BUG   = { wt = 8, fg = "red", bg = "none" },
+            NOTE  = { wt = 1, fg = "blue", bg = "none" },
         },
     }
 

@@ -40,12 +40,23 @@ local function create_popup()
     }
 end
 
-function M.toggle_results(content)
+function M.toggle_results(content, sorted_results)
     local win_info = create_popup()
 
     Mussol_win_id = win_info.win_id
     Mussol_bufh = win_info.bufnr
 
+    for i, result in ipairs(sorted_results) do
+        -- what I think I need to do is create a highlight group for each result
+        -- and then set the highlight group for each line in the buffer
+        print(result.config.fg)
+        -- vim.api.nvim_set_hl(0, 'LineNr', { fg=result.config.fg, bold=true })
+        -- vim.api.nvim_set_hl(0, 'LineNr', { fg="red", bold=true })
+        -- vim.api.nvim_set_hl(0, 'LineText', { fg="red", bold=true })
+        -- vim.api.nvim_buf_add_highlight(Mussol_bufh, -1, result.config.fg, i, 0, -1)
+    end
+
+ 
     vim.api.nvim_win_set_option(Mussol_win_id, "number", true)
     vim.api.nvim_buf_set_name(Mussol_bufh, "mussol-menu")
     vim.api.nvim_buf_set_lines(Mussol_bufh, 0, #content, false, content)
