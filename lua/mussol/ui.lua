@@ -2,6 +2,7 @@ local popup = require("plenary.popup")
 local M = {}
 
 Mussol_win_id = nil
+-- this global variable is used to store the buffer handle of the popup window so that it can be closed later
 Mussol_bufh = nil
 
 local function close_popup()
@@ -11,13 +12,13 @@ local function close_popup()
     Mussol_bufh = nil
 end
 
-local function create_popup()
+function M.create_popup()
     local width = math.floor(vim.o.columns * 0.8)
     local height = math.floor(vim.o.lines * 0.6)
     local borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
     local bufnr = vim.api.nvim_create_buf(false, true)
 
-    local Mussol_win_id, win = popup.create(bufnr, {
+    local mussol_win_id, win = popup.create(bufnr, {
         title = "Results",
         highlight = "MussolWindow",
         line = math.floor(((vim.o.lines - height) / 2) - 1),
@@ -27,38 +28,20 @@ local function create_popup()
         borderchars = borderchars,
     })
 
+    -- below is deprecated, but I'm not sure how to replace it
     vim.api.nvim_win_set_option(
         win.border.win_id,
         "winhl",
         "Normal:MussolBorder"
     )
+
     vim.api.nvim_buf_set_keymap(bufnr, "n", "q", "<cmd>bd!<CR>", { noremap = true, silent = true })
+    Mussol_win_id = mussol_win_id
 
     return {
         bufnr = bufnr,
-        win_id = Mussol_win_id,
+        win_id = mussol_win_id,
     }
-end
-
-function M.toggle_results(content)
-    local win_info = create_popup()
-
-    Mussol_win_id = win_info.win_id
-    Mussol_bufh = win_info.bufnr
-
-    vim.api.nvim_win_set_option(Mussol_win_id, "number", true)
-    vim.api.nvim_buf_set_name(Mussol_bufh, "mussol-menu")
-    vim.api.nvim_buf_set_lines(Mussol_bufh, 0, #content, false, content)
-    vim.api.nvim_buf_set_option(Mussol_bufh, "filetype", "mussol")
-    vim.api.nvim_buf_set_option(Mussol_bufh, "buftype", "acwrite")
-    vim.api.nvim_buf_set_option(Mussol_bufh, "bufhidden", "delete")
-    vim.api.nvim_buf_set_keymap(
-        Mussol_bufh,
-        "n",
-        "<CR>",
-        [[<cmd>lua require('mussol.ui').jump_to_result(vim.fn.getline('.'))<CR>]],
-        {}
-    )
 end
 
 local function get_or_create_buffer(filename)
@@ -83,7 +66,7 @@ function M.jump_to_result(line)
         vim.api.nvim_buf_set_option(buf_id, "buflisted", true)
 
         if set_row then
-             vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col) })
+            vim.api.nvim_win_set_cursor(0, { tonumber(lnum), tonumber(col) })
         end
     end
 end

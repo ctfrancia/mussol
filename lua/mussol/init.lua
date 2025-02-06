@@ -1,5 +1,6 @@
 local config = require("mussol.config")
 local ui = require("mussol.ui")
+local highlighter = require("mussol.highlighter")
 local M = {}
 local targets = {}
 
@@ -9,6 +10,9 @@ function M.setup(user_config)
         if config.default_config_exists() then
             local loaded_config = config.load_config(config.default_config_path())
             targets = loaded_config["targets"]
+            if targets == nil then
+                print("No targets found in config file")
+            end
         else
             local created_default_config = config.create_default_config()
             config.save_config(created_default_config)
@@ -22,56 +26,48 @@ end
 
 local function grep_project()
     local sorted_results = {}
-    local cfg = config.load_config(config.default_config_path())
+    local cfg = config.get_tst_cfg()
 
+    -- Collect results with their corresponding configs
     for _, target in ipairs(cfg["targets"]) do
-        local command = string.format('rg --vimgrep "%s"', target)
+        local command = string.format('rg --vimgrep "%s"', target.name)
         local results = vim.fn.systemlist(command)
         for _, result in ipairs(results) do
-            if result:find(target) then
-                table.insert(sorted_results, { text = result, config = cfg["highlight"][target] })
+            if result:find(target.name) then
+                table.insert(sorted_results, { text = result, config = target })
             end
         end
     end
 
+    -- Sort by weight
     table.sort(sorted_results, function(a, b) return a.config.wt > b.config.wt end)
 
+    -- Extract just the text for display
     local lines = {}
     for _, result in ipairs(sorted_results) do
         table.insert(lines, result.text)
     end
-    --[[
-    local output = {}
-    cfg = config.load_config(config.default_config_path())
-    for i, target in ipairs(cfg["targets"]) do
-        local command = string.format('rg --vimgrep "%s"', target)
-        local res = vim.fn.systemlist(command)
-        if vim.v.shell_error ~= 0 then
-            print(vim.v.shell_error)
-        else
-            for _, line in ipairs(res) do
-                    table.insert(output, { text = line, config = cfg["highlight"][target] })
-                -- table.insert(output, line)
-            end
-        end
-    end
 
-    if #output == 0 then
-        print("No results found")
-        return
-    end
-    ]]
-
-    ui.toggle_results(lines) -- TODO: Rename this function to what it actually does
+    -- Display results
+    local cp = ui.create_popup()
+    vim.api.nvim_buf_set_lines(cp.bufnr, 0, -1, false, lines)
+    highlighter.highlight_results(sorted_results, cfg, cp.bufnr)
+    vim.api.nvim_buf_set_keymap(
+        cp.bufnr,
+        "n",
+        "<CR>",
+        [[<cmd>lua require('mussol.ui').jump_to_result(vim.fn.getline('.'))<CR>]],
+        {}
+    )
 end
 
-vim.api.nvim_create_user_command('Mussol', 
-function(opts)
-    local action = opts.fargs[1]
-    if action == nil then
-        grep_project()
-    end
-    --[[
+vim.api.nvim_create_user_command('Mussol',
+    function(opts)
+        local action = opts.fargs[1]
+        if action == nil then
+            grep_project()
+        end
+        --[[
     I'm not sure if this is necessary? the user could potentiall just edit the
     config file directly.
     if action == "list" then
@@ -98,9 +94,9 @@ function(opts)
         config.edit_tags()
     end
     ]]
-end
-, {
-    nargs = '*'
-})
+    end
+    , {
+        nargs = '*'
+    })
 
 return M

@@ -9,6 +9,9 @@ I don't know this project is in it's infancy. More of a learning Lua project wit
 ```lua
 use 'github.com/ctfrancia/mussol'
 ```
+ 
+## Requirements
+- plenary.nvim
 
 ## Usage
 ```lua
@@ -17,17 +20,6 @@ require('mussol').setup()
 `setup` takes a table with the following options:
 
 ```lua
-default_config = {
-    name = "default",
-    path = "",
-    targets = { "TODO", "FIXME", "BUG", "NOTE" },
-    highlight = {
-        TODO  = { fg = "orange", bg = "none" },
-        FIXME = { fg = "yellow", bg = "none" },
-        BUG   = { fg = "red", bg = "none" },
-        NOTE  = { fg = "blue", bg = "none" },
-    },
-}
 ```
 - `name` is the name of the config
 - `path` is the path where the custom config is located
