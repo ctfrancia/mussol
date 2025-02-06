@@ -67,4 +67,18 @@ function M.create_default_config()
     return default_config
 end
 
+function M.get_tst_cfg()
+    local config = {
+        name = "mussol",
+        path = default_config_path,
+        targets = {
+            { name = "TODO",  wt = 2,  fg = "orange", bg = "none" },
+            { name = "FIXME", wt = 10, fg = "yellow", bg = "none" },
+            { name = "BUG",   wt = 8,  fg = "red",    bg = "none" },
+            { name = "NOTE",  wt = 1,  fg = "blue",   bg = "none" },
+        },
+    }
+    return config
+end
+
 return M
