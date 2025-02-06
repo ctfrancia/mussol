@@ -7,7 +7,7 @@ I don't know this project is in it's infancy. More of a learning Lua project wit
 ## Installation
 ### Packer
 ```lua
-use 'github.com/ctfrancia/mussol'
+use 'ctfrancia/mussol'
 ```
  
 ## Requirements
