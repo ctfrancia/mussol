@@ -1,8 +1,8 @@
 local M = {}
 
 -- Function to setup highlights for each target
-function M.setup_highlights(config)
-    for _, target in ipairs(config.targets) do
+function M.setup_highlights(targets)
+    for _, target in ipairs(targets) do
         local highlight_group = "Mussol" .. target.name
         -- Create highlight group for each target
         vim.api.nvim_command(string.format(
