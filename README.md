@@ -14,17 +14,21 @@ use 'ctfrancia/mussol'
 - plenary.nvim
 
 ## Usage
+structured for Lazy
 ```lua
-require('mussol').setup()
+{
+    "github.com/ctfrancia/mussol",
+    opts = {
+        targets = {
+            { name = "TODO",  wt = 2,  fg = "orange", bg = "none" },
+            { name = "FIXME", wt = 10, fg = "yellow", bg = "none" },
+            { name = "BUG",   wt = 8,  fg = "red",    bg = "none" },
+            { name = "NOTE",  wt = 1,  fg = "blue",   bg = "none" },
+        }
+    }
+}
 ```
-`setup` takes a table with the following options:
-
-```lua
-```
-- `name` is the name of the config
-- `path` is the path where the custom config is located
-  - default is `~/.config/nvim/mussol`
-- `targets` is a table of strings that will be used to search, sort, and highlight
-  - default is { "TODO", "FIXME", "BUG", "NOTE" }
-- `highlight` is a table of tables that will be used to highlight the targets (not implemented yet)
-  - default is the table above
+- `name` is the tag you want to search for.
+- `wt` is the weight of the tag.
+- `fg` is the foreground color of the tag.
+- `bg` is the background color of the tag.
