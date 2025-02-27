@@ -5,13 +5,41 @@ local highlighter = require("mussol.highlighter")
 local M = {}
 local targets = {}
 
-function M.setup(user_config)
-    if user_config == nil then
-        print("No config provided")
-        targets = config.get_default_cfg()["targets"]
+-- @param opts table
+function M.setup(opts)
+    if opts == nil then
+        targets = config.default_cfg()["targets"]
     else
-        print("config provided")
-        -- setup is provided TODO: validate the setup
+        -- Validate that opts has the same structure as default config targets
+        local default_targets = config.default_cfg()["targets"]
+        local is_valid = true
+
+        -- Check if opts is a table
+        if type(opts) ~= "table" then
+            is_valid = false
+        else
+            -- Check if opts has targets
+            if opts.targets == nil or type(opts.targets) ~= "table" then
+                is_valid = false
+            else
+                -- Ensure each target has the required fields (name and wt)
+                for _, target in ipairs(opts.targets) do
+                    if type(target) ~= "table" or
+                        target.name == nil or
+                        target.wt == nil then
+                        is_valid = false
+                        break
+                    end
+                end
+            end
+        end
+
+        if is_valid then
+            targets = opts.targets
+        else
+            vim.notify("Invalid configuration format. Using defaults.", vim.log.levels.WARN)
+            targets = default_targets
+        end
     end
 end
 

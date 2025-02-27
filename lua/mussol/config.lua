@@ -1,6 +1,6 @@
 local M = {}
 
-function M.get_default_cfg()
+function M.default_cfg()
     local config = {
         targets = {
             { name = "TODO",  wt = 2,  fg = "orange", bg = "none" },
