@@ -59,18 +59,18 @@ local function sort_results(results)
     return results
 end
 
----Extract text content from results
+---Extract text content from results with line numbers
 ---@param results table Results with configurations
----@return table Array of text lines
+---@return table Array of text lines with line numbers
 local function extract_content(results)
     local content = {}
-    for _, result in ipairs(results) do
-        table.insert(content, result.text)
+    for i, result in ipairs(results) do
+        table.insert(content, string.format("%d. %s", i, result.text))
     end
     return content
 end
 
----Display search results in a popup window
+---Display search results in a popup window with line numbers
 ---@param results table Sorted results with configurations
 local function display_results(results)
     local content = extract_content(results)
@@ -89,7 +89,7 @@ local function display_results(results)
         cp.bufnr,
         "n",
         "<CR>",
-        [[<cmd>lua require('mussol.ui').jump_to_result(vim.fn.getline('.'))<CR>]],
+        [[<cmd>lua require('mussol.ui').jump_to_result(vim.fn.getline('.'):match("^%d+%. (.+)$"))<CR>]],
         { noremap = true, silent = true }
     )
 end
