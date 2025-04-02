@@ -101,7 +101,7 @@ local function grep_project()
     display_results(sorted_results)
 end
 
----Setup mussol with the given options
+---Setup mussol with the given options, this is the init of the plugin
 ---@param opts table|nil Configuration options
 function M.setup(opts)
     local default_targets = config.default_cfg()["targets"]
